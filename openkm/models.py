@@ -145,7 +145,7 @@ class OpenKmDocument(OpenKmMetadata):
         Set the model's fields values with the meta data returned
         by OpenKM to identify the resource
         """
-        self.okm_author = openkm_document.author
+        self.okm_author = openkm_document.author if openkm_document.author else ''
         self.okm_created = openkm_document.created
         self.okm_path = openkm_document.path
         self.okm_permissions = openkm_document.permissions

@@ -312,6 +312,7 @@ class Document(BaseService):
             raise AttributeError('createDocument is not available on your instance of OpenKM')
         return self.service.createDocument(token=self.token, content=content, data=data)
 
+
     def update_document(self, data):
         """
         Custom web service to update a document and all associated metadata in a single call

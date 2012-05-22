@@ -449,7 +449,13 @@ class DjangoToOpenKm(SyncDocument):
         # create a new data instance (contains a document instance and properties
         data = document_client.create_document_data_object()
         filename = self._get_file_name(document)
-        data.document.path = '%s%s' % (settings.OPENKM['configuration']['UploadRoot'], filename)
+        base_path = settings.OPENKM['configuration']['UploadRoot']
+
+        if taxonomy:
+            # create the taxonomy here
+            pass
+
+        data.document.path = '%s%s' % (base_path, filename)
 
         # populate the document with keywords and categories
         data.document.keywords = document.tags.split(',')
@@ -458,16 +464,11 @@ class DjangoToOpenKm(SyncDocument):
         categories = self.get_categories(document, openkm_folderlist_class)
         data.document.categories = [document_client.create_category_folder_object(c.okm_path) for c in categories]
 
-        # initialise list nodes
-        data.document.notes = []
-        data.document.subscriptors = []
-
         # populate data and attach property groups
-        data.properties = []
         sync_properties = SyncProperties()
         data.properties = sync_properties.django_to_openkm_improved(document)
 
-        logging.debug(data)
+        logger.debug(data)
 
         # go go go!
         if not document.okm_uuid:
@@ -476,8 +477,10 @@ class DjangoToOpenKm(SyncDocument):
             okm_document = document_client.create_document(content, data)
         else:
             okm_document = document_client.update_document(data)
-        document.set_model_fields(okm_document)
-        document.save()
+
+        if okm_document:
+            document.set_model_fields(okm_document)
+            document.save()
 
     def _get_file_name(self, document):
         return document.file.name.split('/')[-1:][0]
@@ -501,7 +504,7 @@ class DjangoToOpenKm(SyncDocument):
             self.categories(document, folderlist_document_class)
             self.properties(document)
         except Exception, e:
-            print e
+            logger.exception(e)
 
     def update_properties(self, document, document_class):
         """

@@ -1,6 +1,9 @@
 import datetime
+
 from django.test import TestCase
 from django.conf import settings
+
+import suds
 
 import client, facades, models, sync, utils
 
@@ -611,8 +614,11 @@ class CustomWebServicesTest(TestCase):
         }
 
     def test_create_document(self):
-        document = client.Document()
-        okm_document = document.create_document(self.content, self.data)
+        try:
+            document = client.Document()
+            okm_document = document.create_document(self.content, self.data)
+        except suds.WebFault, e:
+            print 'Caught suds.WebFault.  Document already exists on server: ', e.message
 
     def test_update_document(self):
         document = client.Document()

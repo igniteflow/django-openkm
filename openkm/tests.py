@@ -583,8 +583,8 @@ class CustomWebServicesTest(TestCase):
 
         # add properties
         sync_properties = sync.SyncProperties()
-        properties = sync_properties._populate_property_group(self._get_properties_dict())
-        data.properties = self.populate_property_group(properties)
+        properties = self._get_properties_dict()
+        data.properties = sync_properties.populate_property_group(properties)
 
         return data
 
@@ -613,7 +613,6 @@ class CustomWebServicesTest(TestCase):
     def test_create_document(self):
         document = client.Document()
         okm_document = document.create_document(self.content, self.data)
-        print okm_document
 
     def test_update_document(self):
         document = client.Document()
